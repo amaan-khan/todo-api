@@ -1,29 +1,31 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 var PORT = process.env.PORT || 3000;
-var todos = [{
-	id: 1,
-	description: 'Meet mom at home',
-	completed: false
-}, {
-	id: 2,
-	description: 'Call wife',
-	completed: false
-}];
+var todos = [];
+var todoNext = 1;
 
-// GET /todos
+app.use(bodyParser.json());
+
+app.get('/', function (request,response) {
+	response.send('ToDo API root');
+});
 
 app.get('/todos', function (request,response) {
 	response.json(todos);
 });
 
-// GET /todos/id
+app.post('/todos' , function (request, response) {
+	var body = request.body;
+	body.id = todoNext++;
+	todos.push(body);
+	console.log('description '  + body.description);
+	response.json(body);
+})
 
 app.get('/todos/:id', function (request,response) {
 	var todoId = parseInt(request.params.id, 10);
 	var matchedtodo;
-	
-	// iterate over todos
 	todos.forEach(function (todo) {
 		if(todoId === todo.id){
 			matchedtodo=todo;
@@ -34,10 +36,6 @@ app.get('/todos/:id', function (request,response) {
 	}else{
 		response.status(404).send();
 	}
-});
-
-app.get('/', function (request,response) {
-	response.send('ToDo API root');
 });
 
 app.listen(PORT, function () {
