@@ -40,6 +40,25 @@ app.get('/todos/:id', function (request,response) {
 	}
 });
 
+app.delete('/todos/:id', function (request, response) {
+	var todoId = parseInt(request.params.id, 10);
+	var matchedtodo = _.findWhere(todos, {id:todoId});			// find by id, id as object
+	if(matchedtodo){
+		_.without(todos, matchedtodo);
+		console.log("deleted: " + matchedtodo);
+		response.json( {
+			"message":  "Deleted todo with id: " + todoId
+		} ); 
+	}
+	else{
+		console.log("Todo not found");
+		response.json({
+			"error": "no todo with id "+ todoId
+		})
+		response.status(200).send();
+	}
+});
+
 app.listen(PORT, function () {
 	console.log('Express listening on port ' + PORT);
 });
